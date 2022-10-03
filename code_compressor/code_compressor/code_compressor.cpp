@@ -7,26 +7,23 @@
 #include <vector>
 #include <fstream>
 #include <unordered_set>
+#include <algorithm>
 
 using namespace std;
 
 vector<string> readFile(string fileName);
-string* makeDictionary(vector <string> instructionSet);
+vector<string> makeDictionary(vector <string> instructionSet);
 
 int main()
 {
     cout << "Code compressor \n";
     
     vector <string> Instructions = readFile("original.txt");
-    vector <int> Repetition_count;
-    vector <string> Dict ;
-
-
+    vector <string> Dictionary = makeDictionary(Instructions);
     
-    /*for (string i : Instructions){
+    /*for (string i : Dictionary){
         cout << i << endl;
-    }
-    cout << Instructions.size();*/
+    }*/
      
 
 
@@ -42,7 +39,7 @@ vector<string> readFile(string fileName) {
     in_file.open(fileName);
 
     if (in_file.is_open()) {
-        cout << "File open successful" << endl;
+        //cout << "File open successful" << endl;
         while (!in_file.eof())
         {
             in_file >> line;
@@ -60,37 +57,53 @@ vector<string> readFile(string fileName) {
         
     }
     else {
-        cout << "File open failed" << endl;
+        //cout << "File open failed" << endl;
     }
 
     return instructions;
 }
 
-string* makeDictionary(vector <string> instructionSet) {
-    
-        vector<string> duplicate;
+vector<string> makeDictionary(vector <string> instructionSet) {
+    vector <string> duplicates;
+    vector <int> duplicateCount;
+    int rep;
+    vector <string> dictionary;
+    int dictSize = 8;
+    int index;
+    int currentMax;
 
-        // STL function to sort the array of string
-        sort(instructionSet.begin(), instructionSet.end());
-
-        for (int i = 1; i < instructionSet.size(); i++) {
-            if (instructionSet[i - 1] == instructionSet[i]) {
-
-                // STL function to push the duplicate
-                // words in a new vector string
-                if (duplicate.empty())
-                    duplicate.push_back(instructionSet[i]);
-                else if (instructionSet[i] != duplicate.back())
-                    duplicate.push_back(instructionSet[i]);
-            }
+    for (string code : instructionSet)
+    {
+        rep = count(instructionSet.begin(), instructionSet.end(), code);
+        if ( rep > 1)
+        {
+            if (count(duplicates.begin(),duplicates.end(),code)==0)
+            {
+                duplicates.push_back(code);
+                duplicateCount.push_back(rep);
+                //cout << code << " --> " << rep<<endl;
+            }   
         }
+    }
 
-        if (duplicate.size() == 0)
-            cout << "No Duplicate words" << endl;
-        else
-            for (int i = 0; i < duplicate.size(); i++)
-                cout << duplicate[i] << endl;
+    if (duplicates.size() < 8) {
+        dictSize = duplicates.size();
+    }
+
+    for (int i = 0; i < dictSize; i++)
+    {
+        currentMax = *max_element(duplicateCount.begin(), duplicateCount.end());
+        index = find(duplicateCount.begin(), duplicateCount.end(), currentMax)-duplicateCount.begin();
+        //cout << "max-" << currentMax << " index-" << index << endl;
+        dictionary.push_back(duplicates[index]);
+        duplicateCount[index] = -1;
+    }
+
+    /*for (string code : dictionary) {
+        cout << code << "-->" << count(instructionSet.begin(), instructionSet.end(), code) << endl;
+    }*/
     
+    return dictionary;
 
 }
 
