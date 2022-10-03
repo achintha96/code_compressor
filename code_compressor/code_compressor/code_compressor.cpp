@@ -13,6 +13,8 @@ using namespace std;
 
 vector<string> readFile(string fileName);
 vector<string> makeDictionary(vector <string> instructionSet);
+vector<string> codeCompression(vector <string> instructionSet, vector <string> dictionary);
+string convertToBinary(int num);
 
 int main()
 {
@@ -20,10 +22,12 @@ int main()
     
     vector <string> Instructions = readFile("original.txt");
     vector <string> Dictionary = makeDictionary(Instructions);
+    vector <string> CompressedCode = codeCompression(Instructions, Dictionary);
     
-    /*for (string i : Dictionary){
+    /*for (string i : CompressedCode){
         cout << i << endl;
-    }*/
+    }
+    cout << "\ncode length=" << CompressedCode.size() << endl;*/
      
 
 
@@ -105,6 +109,65 @@ vector<string> makeDictionary(vector <string> instructionSet) {
     
     return dictionary;
 
+}
+
+vector<string> codeCompression(vector <string> instructionSet, vector <string> dictionary) {
+    vector <string> compressedInstructions;
+    string encodedInstruction;
+    int i = 1;
+
+    for (string code : instructionSet)
+    {
+        encodedInstruction = "";
+        auto it = find(dictionary.begin(), dictionary.end(), code);
+        if (it != dictionary.end())
+        {
+            int index = it - dictionary.begin();
+            encodedInstruction = "101" + convertToBinary(index);
+        }
+        else {
+            encodedInstruction = "    -1";
+        }
+        compressedInstructions.push_back(encodedInstruction);
+        cout << i << "  original=" << code << "  encoded=" << encodedInstruction << endl;
+        i++;
+    }
+
+    return compressedInstructions;
+}
+
+string convertToBinary(int num) {
+    string output;
+    if (num == 0) {
+        output = "000";
+    }
+    else if (num == 1) {
+        output = "001";
+    }
+    else if (num == 2) {
+        output = "010";
+    }
+    else if (num == 3) {
+        output = "011";
+    }
+    else if (num == 4) {
+        output = "100";
+    }
+    else if (num == 5) {
+        output = "101";
+    }
+    else if (num == 6) {
+        output = "110";
+    }
+    else if (num == 7) {
+        output = "111";
+    }
+    else
+    {
+        output = num;
+    }
+
+    return output;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
