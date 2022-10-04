@@ -30,10 +30,10 @@ int main()
     }
     cout << "\ncode length=" << CompressedCode.size() << endl;*/
      
-    cout << " 9=" << convertToBinary(9, 5) << endl;
+    /*cout << " 9=" << convertToBinary(9, 5) << endl;
     cout << "10=" << convertToBinary(10, 6) << endl;
     cout << "16=" << convertToBinary(16, 9) << endl;
-    cout << " 0=" << convertToBinary(0, 4) << endl;
+    cout << " 0=" << convertToBinary(0, 4) << endl;*/
 
     return 0;
 }
@@ -118,9 +118,8 @@ vector<string> makeDictionary(vector <string> instructionSet) {
 vector<string> codeCompression(vector <string> instructionSet, vector <string> dictionary) {
     vector <string> compressedInstructions;
     string encodedInstruction;
-    int i = 1;
 
-    for (string code : instructionSet)
+    /*for (string code : instructionSet)
     {
         encodedInstruction = "";
         auto it = find(dictionary.begin(), dictionary.end(), code);
@@ -135,6 +134,24 @@ vector<string> codeCompression(vector <string> instructionSet, vector <string> d
         compressedInstructions.push_back(encodedInstruction);
         cout << i << "  original=" << code << "  encoded=" << encodedInstruction << endl;
         i++;
+    }*/
+
+    for (int index = 0; index < instructionSet.size(); index++)
+    {
+        encodedInstruction = "";
+        auto it = find(dictionary.begin(), dictionary.end(), instructionSet[index]);
+        if (it != dictionary.end())
+        {
+            int index = it - dictionary.begin();
+            encodedInstruction = "101" + convertToBinary(index, 3);
+        }
+        else {
+            encodedInstruction = "    -1";
+        }
+        compressedInstructions.push_back(encodedInstruction);
+        cout << index << "  original=" << instructionSet[index] << "  encoded=" << encodedInstruction << endl;
+
+        
     }
 
     return compressedInstructions;
