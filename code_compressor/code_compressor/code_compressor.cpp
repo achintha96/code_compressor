@@ -16,6 +16,7 @@ vector<string> makeDictionary(vector <string> instructionSet);
 vector<string> codeCompression(vector <string> instructionSet, vector <string> dictionary);
 string convertToBinary(int num);
 string convertToBinary(int num, int precision);
+char xorStr(char a, char b);
 
 int main()
 {
@@ -142,11 +143,106 @@ vector<string> codeCompression(vector <string> instructionSet, vector <string> d
         auto it = find(dictionary.begin(), dictionary.end(), instructionSet[index]);
         if (it != dictionary.end())
         {
+            //found in dictionary
             int index = it - dictionary.begin();
             encodedInstruction = "101" + convertToBinary(index, 3);
         }
-        else {
-            encodedInstruction = "    -1";
+        else 
+        {
+            //not found in dictionary
+            vector <string> possibleEncodes;
+            for (int dictIndex = 0; dictIndex < dictionary.size();dictIndex++) {
+                //int mismatchCount = 0;
+                vector <int> mismatchLocations;
+
+                //checking number of mismatches
+                for (int addr=0; addr < 32; addr++) {
+                    if (dictionary[dictIndex][addr]!=instructionSet[index][addr])//mismatch condition
+                    {
+                        //mismatchCount++;
+                        mismatchLocations.push_back(addr);
+                        if (addr<29)//cheking for 4 bitmask case
+                        {
+                            string prefixInst = instructionSet[index].substr(0, addr);
+                            string misInst = instructionSet[index].substr(addr, 4);
+                            string suffixInst = instructionSet[index].substr(addr + 4);
+
+                            string prefixDict = dictionary[dictIndex].substr(0, addr);
+                            string misDict = dictionary[dictIndex].substr(addr, 4);
+                            string suffixDict = dictionary[dictIndex].substr(addr + 4);
+
+                            string tempEncode;
+                            if ((prefixInst==prefixDict) && (suffixInst==suffixDict))
+                            {
+                                string bitmask;
+                                for (int i = 0; i < 4; i++) {
+                                    bitmask = bitmask + xorStr(misInst[i], misDict[i]);
+                                }
+                                tempEncode = "001" + convertToBinary(addr, 5) + bitmask + convertToBinary(dictIndex, 3);
+                                possibleEncodes.push_back(tempEncode);
+                            }
+                        }
+
+                        if (addr!=31)//consecutive two bit mismatch
+                        {
+                            string prefixInst = instructionSet[index].substr(0, addr);
+                            //string misInst = instructionSet[index].substr(addr, 2);
+                            string suffixInst = instructionSet[index].substr(addr + 2);
+
+                            string prefixDict = dictionary[dictIndex].substr(0, addr);
+                            //string misDict = dictionary[dictIndex].substr(addr, 2);
+                            string suffixDict = dictionary[dictIndex].substr(addr + 2);
+
+                            string tempEncode;
+                            if ((prefixInst == prefixDict) && (suffixInst == suffixDict))
+                            {
+                                tempEncode = "011" + convertToBinary(addr, 5) + convertToBinary(dictIndex, 3);
+                                possibleEncodes.push_back(tempEncode);
+                            }
+                        }
+
+                        //only one bit mismatch
+                        string prefixInst = instructionSet[index].substr(0, addr);
+                        //string misInst = instructionSet[index].substr(addr, 1);
+                        string suffixInst = instructionSet[index].substr(addr + 1);
+
+                        string prefixDict = dictionary[dictIndex].substr(0, addr);
+                        //string misDict = dictionary[dictIndex].substr(addr, 1);
+                        string suffixDict = dictionary[dictIndex].substr(addr + 1);
+
+                        string tempEncode;
+                        if ((prefixInst == prefixDict) && (suffixInst == suffixDict))
+                        {
+                            tempEncode = "010" + convertToBinary(addr, 5) + convertToBinary(dictIndex, 3);
+                            possibleEncodes.push_back(tempEncode);
+                        }
+
+
+                    }//end of mismatch condition
+                    
+                }//end of loop iterating over 32 bits
+
+                if (mismatchLocations.size() == 2) {
+                    string tempEncode = "100" + convertToBinary(mismatchLocations[0], 5) + convertToBinary(mismatchLocations[1], 5) + convertToBinary(dictIndex, 3);
+                    possibleEncodes.push_back(tempEncode);
+                }
+
+            }//end of loop iterating over dictionary
+
+            if (possibleEncodes.size()==0)
+            {//cannot compress in any form
+                encodedInstruction = "110" + instructionSet[index];
+            }
+            else if (possibleEncodes.size() == 1) 
+            {//only one compression form available
+                encodedInstruction = possibleEncodes[0] + encodedInstruction;
+            }
+            else
+            {
+                //many forms of compression available
+            }
+
+            //encodedInstruction = "    -1";
         }
         compressedInstructions.push_back(encodedInstruction);
         cout << index << "  original=" << instructionSet[index] << "  encoded=" << encodedInstruction << endl;
@@ -175,10 +271,10 @@ vector<string> codeCompression(vector <string> instructionSet, vector <string> d
             cout << "********************************************* RLE found = " << instructionRLE << endl;
         }
         
-    }
+    }//end of instruction set iterating loop
 
     return compressedInstructions;
-}
+}//end of compressing function
 
 string convertToBinary(int num, int precision) {
     //cout << num << " - ";
@@ -246,6 +342,35 @@ string convertToBinary(int num) {
     }
 
     return output;
+}
+
+
+char xorStr (char a, char b) {
+    char result;
+    if (a == '1')
+    {
+        if (b == '1')
+        {
+            result = '0';
+        }
+        else if (b == '0')
+        {
+            result = '1';
+        }
+    }
+    else if (a == '0')
+    {
+        if (b == '1')
+        {
+            result = '1';
+        }
+        else if (b == '0')
+        {
+            result = '0';
+        }
+    }
+
+    return result;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
