@@ -17,6 +17,7 @@ vector<string> codeCompression(vector <string> instructionSet, vector <string> d
 string convertToBinary(int num);
 string convertToBinary(int num, int precision);
 char xorStr(char a, char b);
+vector <int> findIndeces(vector<int> data, int element);
 
 int main()
 {
@@ -238,8 +239,24 @@ vector<string> codeCompression(vector <string> instructionSet, vector <string> d
                 encodedInstruction = possibleEncodes[0] + encodedInstruction;
             }
             else
-            {
-                //many forms of compression available
+            {//many forms of compression available
+                vector <int> encodeLengths;
+                for (string encodedCode : possibleEncodes) {
+                    encodeLengths.push_back(encodedCode.size());
+                }
+                int minLength = *min_element(encodeLengths.begin(), encodeLengths.end());
+                vector<int> minIndeces = findIndeces(encodeLengths, minLength);
+
+                if (minIndeces.size()==1)
+                {
+                    encodedInstruction = possibleEncodes[minIndeces[0]];
+                }
+                else
+                {
+
+                }
+
+                
             }
 
             //encodedInstruction = "    -1";
@@ -268,6 +285,7 @@ vector<string> codeCompression(vector <string> instructionSet, vector <string> d
         {
             string instructionRLE = "000" + convertToBinary(repetionRLE-1, 2);
             index = index + repetionRLE;
+            compressedInstructions.push_back(instructionRLE);
             cout << "********************************************* RLE found = " << instructionRLE << endl;
         }
         
@@ -344,7 +362,6 @@ string convertToBinary(int num) {
     return output;
 }
 
-
 char xorStr (char a, char b) {
     char result;
     if (a == '1')
@@ -371,6 +388,17 @@ char xorStr (char a, char b) {
     }
 
     return result;
+}
+
+vector <int> findIndeces(vector<int> data, int element) {
+    vector<int> indeces;
+    for (int i = 0; i < data.size(); i++) {
+        if (data[i]==element)
+        {
+            indeces.push_back(i);
+        }
+    }
+    return indeces;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
