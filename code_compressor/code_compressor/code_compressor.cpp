@@ -151,6 +151,29 @@ vector<string> codeCompression(vector <string> instructionSet, vector <string> d
         compressedInstructions.push_back(encodedInstruction);
         cout << index << "  original=" << instructionSet[index] << "  encoded=" << encodedInstruction << endl;
 
+        //cheking for RLE
+        int repetionRLE = 0;
+        for (int temp = 1; temp < 5; temp++) {
+            if (index + temp <= instructionSet.size() - 1) {
+                if (instructionSet[index] == instructionSet[index + temp]) {
+                    repetionRLE++;
+                }
+                else
+                {
+                    temp = 6;
+                }
+            }
+            else
+            {
+                temp = 6;
+            }
+        }
+        if (repetionRLE!=0)
+        {
+            string instructionRLE = "000" + convertToBinary(repetionRLE-1, 2);
+            index = index + repetionRLE;
+            cout << "********************************************* RLE found = " << instructionRLE << endl;
+        }
         
     }
 
