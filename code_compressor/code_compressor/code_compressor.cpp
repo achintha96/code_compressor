@@ -15,6 +15,7 @@ vector<string> readFile(string fileName);
 vector<string> makeDictionary(vector <string> instructionSet);
 vector<string> codeCompression(vector <string> instructionSet, vector <string> dictionary);
 string convertToBinary(int num);
+string convertToBinary(int num, int precision);
 
 int main()
 {
@@ -29,7 +30,10 @@ int main()
     }
     cout << "\ncode length=" << CompressedCode.size() << endl;*/
      
-
+    cout << " 9=" << convertToBinary(9, 5) << endl;
+    cout << "10=" << convertToBinary(10, 6) << endl;
+    cout << "16=" << convertToBinary(16, 9) << endl;
+    cout << " 0=" << convertToBinary(0, 4) << endl;
 
     return 0;
 }
@@ -123,7 +127,7 @@ vector<string> codeCompression(vector <string> instructionSet, vector <string> d
         if (it != dictionary.end())
         {
             int index = it - dictionary.begin();
-            encodedInstruction = "101" + convertToBinary(index);
+            encodedInstruction = "101" + convertToBinary(index,3);
         }
         else {
             encodedInstruction = "    -1";
@@ -134,6 +138,40 @@ vector<string> codeCompression(vector <string> instructionSet, vector <string> d
     }
 
     return compressedInstructions;
+}
+
+string convertToBinary(int num, int precision) {
+    //cout << num << " - ";
+    string binaryNum = "";
+    if (num==0)
+    {
+        binaryNum = "0";
+    }
+    else
+    {
+        while (num != 1)
+        {
+            if (num % 2 == 1) {
+                binaryNum = "1" + binaryNum;
+            }
+            else
+            {
+                binaryNum = "0" + binaryNum;
+            }
+            num = num / 2;
+        }
+        binaryNum = "1" + binaryNum;
+    }
+    
+
+    if (binaryNum.size()<precision)
+    {
+        //binaryNum = "0" * (precision - binaryNum.size()) + binaryNum;
+        string prefix((precision - binaryNum.size()), '0');
+        binaryNum = prefix + binaryNum;
+    }
+    //cout << binaryNum << endl;
+    return binaryNum;
 }
 
 string convertToBinary(int num) {
