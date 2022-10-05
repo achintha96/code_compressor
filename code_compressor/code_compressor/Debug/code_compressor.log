@@ -1,8 +1,8 @@
 ﻿  code_compressor.cpp
-D:\Academic\6th B semester Assignemnts and projects\Embedded\Assignment 3\code_compressor\code_compressor\code_compressor\code_compressor.cpp(145,31): warning C4018: '<': signed/unsigned mismatch
-D:\Academic\6th B semester Assignemnts and projects\Embedded\Assignment 3\code_compressor\code_compressor\code_compressor\code_compressor.cpp(159,47): warning C4018: '<': signed/unsigned mismatch
-D:\Academic\6th B semester Assignemnts and projects\Embedded\Assignment 3\code_compressor\code_compressor\code_compressor\code_compressor.cpp(287,30): warning C4018: '<=': signed/unsigned mismatch
-D:\Academic\6th B semester Assignemnts and projects\Embedded\Assignment 3\code_compressor\code_compressor\code_compressor\code_compressor.cpp(338,25): warning C4018: '<': signed/unsigned mismatch
-D:\Academic\6th B semester Assignemnts and projects\Embedded\Assignment 3\code_compressor\code_compressor\code_compressor\code_compressor.cpp(425,23): warning C4018: '<': signed/unsigned mismatch
-D:\Academic\6th B semester Assignemnts and projects\Embedded\Assignment 3\code_compressor\code_compressor\code_compressor\code_compressor.cpp(489,36): warning C4018: '<': signed/unsigned mismatch
+D:\Academic\6th B semester Assignemnts and projects\Embedded\Assignment 3\code_compressor\code_compressor\code_compressor\code_compressor.cpp(195,31): warning C4018: '<': signed/unsigned mismatch
+D:\Academic\6th B semester Assignemnts and projects\Embedded\Assignment 3\code_compressor\code_compressor\code_compressor\code_compressor.cpp(209,47): warning C4018: '<': signed/unsigned mismatch
+D:\Academic\6th B semester Assignemnts and projects\Embedded\Assignment 3\code_compressor\code_compressor\code_compressor\code_compressor.cpp(337,30): warning C4018: '<=': signed/unsigned mismatch
+D:\Academic\6th B semester Assignemnts and projects\Embedded\Assignment 3\code_compressor\code_compressor\code_compressor\code_compressor.cpp(388,25): warning C4018: '<': signed/unsigned mismatch
+D:\Academic\6th B semester Assignemnts and projects\Embedded\Assignment 3\code_compressor\code_compressor\code_compressor\code_compressor.cpp(475,23): warning C4018: '<': signed/unsigned mismatch
+D:\Academic\6th B semester Assignemnts and projects\Embedded\Assignment 3\code_compressor\code_compressor\code_compressor\code_compressor.cpp(539,36): warning C4018: '<': signed/unsigned mismatch
   code_compressor.vcxproj -> D:\Academic\6th B semester Assignemnts and projects\Embedded\Assignment 3\code_compressor\code_compressor\Debug\code_compressor.exe

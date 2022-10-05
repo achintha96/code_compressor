@@ -24,26 +24,76 @@ vector<string> organizeOutput(vector<string> compressedCode, vector<string> dict
 vector<string> decode(vector<string> rawData);
 void writeFile(string fileName, vector<string> data);
 
-int main()
-{
-    //code comprssing part
-    cout << "Code compressor \n";
-    vector<string> Instructions = readFile("original.txt");
-    vector<string> Dictionary = makeDictionary(Instructions);
-    vector<string> CompressedCode = codeCompression(Instructions, Dictionary);
-    vector<string> Organizedcode = organizeOutput(CompressedCode, Dictionary);
-    writeFile("cout.txt", Organizedcode);
-    
+//int main()
+//{
+//    int task;
+//
+//    cout << "On my honor, I have neither given nor received unauthorized aid on this assignment" << endl;
+//
+//    cin >> task;
+//
+//    if (task == 1) {
+//        //code comprssing part
+//        cout << "Code compressor \n";
+//        vector<string> Instructions = readFile("original.txt");
+//        vector<string> Dictionary = makeDictionary(Instructions);
+//        vector<string> CompressedCode = codeCompression(Instructions, Dictionary);
+//        vector<string> Organizedcode = organizeOutput(CompressedCode, Dictionary);
+//        writeFile("cout.txt", Organizedcode);
+//    }
+//    else if (task == 2)
+//    {
+//        //code decompressing part
+//        cout << "Code decompressor \n";
+//
+//        vector<string> DecodedInst = decode(readFile("compressed.txt"));
+//        writeFile("dout.txt", DecodedInst);
+//    }
+//    else
+//    {
+//        cout << "Invalid input \n" << endl;
+//    }
+//
+//
+//    cout << "\n" << endl;
+//
+//    return 0;
+//}
 
-    //code decompressing part
-    cout << "\n\nCode decompressor \n";
-    
-    vector<string> DecodedInst = decode(readFile("compressed.txt"));
-    writeFile("dout.txt", DecodedInst);
+int main(int argc, char** argv)
+{
+    if (argc == 2) {
+        if (argv[1][0] == '1')
+        {
+            //code comprssing part
+            cout << "Code compressor \n";
+            vector<string> Instructions = readFile("original.txt");
+            vector<string> Dictionary = makeDictionary(Instructions);
+            vector<string> CompressedCode = codeCompression(Instructions, Dictionary);
+            vector<string> Organizedcode = organizeOutput(CompressedCode, Dictionary);
+            writeFile("cout.txt", Organizedcode);
+
+        }
+        else if (argv[1][0] == '2')
+        {
+            //code decompressing part
+            cout << "Code decompressor \n";
+
+            vector<string> DecodedInst = decode(readFile("compressed.txt"));
+            writeFile("dout.txt", DecodedInst);
+        }
+        else
+        {
+            cout << "Invalid Input" << endl;
+        }
+    }
+    else
+    {
+        cout << "Invalid Input" << endl;
+    }
 
     return 0;
 }
-
 
 vector<string> readFile(string fileName) {
     string line;
