@@ -19,6 +19,7 @@ string convertToBinary(int num, int precision);
 char xorStr(char a, char b);
 vector <int> findIndeces(vector<int> data, int element);
 int binToDec(string bin);
+void writeOutput(vector<string> compressedCode, vector<string> dictionary);
 
 int main()
 {
@@ -26,6 +27,7 @@ int main()
     vector <string> Instructions = readFile("original.txt");
     vector <string> Dictionary = makeDictionary(Instructions);
     vector <string> CompressedCode = codeCompression(Instructions, Dictionary);
+    writeOutput(CompressedCode, Dictionary);
     
 
     return 0;
@@ -266,7 +268,7 @@ vector<string> codeCompression(vector <string> instructionSet, vector <string> d
         }
         compressedInstructions.push_back(encodedInstruction);
         //cout << index << "  original=" << instructionSet[index] << "  encoded=" << encodedInstruction << endl;
-        cout << index << "  original=" << instructionSet[index] << "  encoded=" << compressedInstructions[compressedInstructions.size()-1] << endl;
+        //cout << index << "  original=" << instructionSet[index] << "  encoded=" << compressedInstructions[compressedInstructions.size()-1] << endl;
 
         //cheking for RLE
         int repetionRLE = 0;
@@ -290,7 +292,7 @@ vector<string> codeCompression(vector <string> instructionSet, vector <string> d
             string instructionRLE = "000" + convertToBinary(repetionRLE-1, 2);
             index = index + repetionRLE;
             compressedInstructions.push_back(instructionRLE);
-            cout << "********************************************* RLE found = " << instructionRLE << endl;
+            //cout << "********************************************* RLE found = " << instructionRLE << endl;
         }
         
     }//end of instruction set iterating loop
@@ -415,6 +417,41 @@ int binToDec(string bin) {
         exponent = exponent * 2;
     }
     return dec;
+}
+
+void writeOutput(vector<string> compressedCode, vector<string> dictionary) {
+    vector <string> organizedCode;
+    string tempCode = "";
+
+    //organizing compressed code 
+    for (string code: compressedCode)
+    {
+        tempCode = tempCode + code;
+        
+        if (tempCode.size() > 31) 
+        {
+            organizedCode.push_back(tempCode.substr(0, 32));
+            tempCode = tempCode.substr(32);
+        }
+        
+    }
+    string suffix((32 - tempCode.size()), '1');
+    tempCode = tempCode + suffix;
+    organizedCode.push_back(tempCode);
+
+    //making seperation
+    tempCode = "xxxx";
+    organizedCode.push_back(tempCode);
+
+    //writing dictionary
+    for (string code : dictionary) {
+        organizedCode.push_back(code);
+    }
+
+    for (string k : organizedCode) {
+        cout << k << endl;
+    }
+    cout << "\ncompleted compression successfully" << endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
