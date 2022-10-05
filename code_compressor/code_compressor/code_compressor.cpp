@@ -20,7 +20,7 @@ char xorStr(char a, char b);
 char notStr(char a);
 vector<int> findIndeces(vector<int> data, int element);
 int binToDec(string bin);
-void writeOutput(vector<string> compressedCode, vector<string> dictionary);
+vector<string> organizeOutput(vector<string> compressedCode, vector<string> dictionary);
 vector<string> decode(vector<string> rawData);
 
 int main()
@@ -30,13 +30,15 @@ int main()
     vector<string> Instructions = readFile("original.txt");
     vector<string> Dictionary = makeDictionary(Instructions);
     vector<string> CompressedCode = codeCompression(Instructions, Dictionary);
-    writeOutput(CompressedCode, Dictionary);
+    vector<string> Organizedcode = organizeOutput(CompressedCode, Dictionary);
     
 
     //code decompressing part
     cout << "\n\nCode decompressor \n";
-    //vector<string> rawData = readFile("compressed.txt");
+    
     vector<string> DecodedInst = decode(readFile("compressed.txt"));
+    //vector<string> DecodedInst = decode(Organizedcode);
+
     int i = 0;
     for (string code:DecodedInst)
     {
@@ -454,7 +456,7 @@ int binToDec(string bin) {
     return dec;
 }
 
-void writeOutput(vector<string> compressedCode, vector<string> dictionary) {
+vector<string> organizeOutput(vector<string> compressedCode, vector<string> dictionary) {
     vector <string> organizedCode;
     string tempCode = "";
 
@@ -487,6 +489,8 @@ void writeOutput(vector<string> compressedCode, vector<string> dictionary) {
         cout << k << endl;
     }
     cout << "\ncompleted compression successfully" << endl;
+
+    return organizedCode;
 }
 
 vector<string> decode(vector<string> rawData) {
@@ -535,15 +539,15 @@ vector<string> decode(vector<string> rawData) {
                 inst = dictionary[dictIndex].substr(0, location);
 
                 for (int j = 0; j < 4; j++) {
-                    inst = inst + xorStr(bitmask[0], dictionary[dictIndex][location + j]);
+                    inst = inst + xorStr(bitmask[j], dictionary[dictIndex][location + j]);
                 }
 
                 inst = inst + dictionary[dictIndex].substr(location + 4);
 
-                if (inst.size() != 32) {
+                /*if (inst.size() != 32) {
                     cout << identifier << endl;
                 }
-                cout << dictionary[dictIndex]<<"-----"<<bitmask << endl;
+                cout << dictionary[dictIndex]<<"-----"<<bitmask << endl;*/
             }
             else if (identifier == "010")
             {
@@ -556,9 +560,9 @@ vector<string> decode(vector<string> rawData) {
 
                 inst = dictionary[dictIndex].substr(0, location) + notStr(dictionary[dictIndex][location]) + dictionary[dictIndex].substr(location + 1);
 
-                if (inst.size() != 32) {
+                /*if (inst.size() != 32) {
                     cout << identifier << endl;
-                }
+                }*/
             }
             else if (identifier == "011")
             {
@@ -571,9 +575,9 @@ vector<string> decode(vector<string> rawData) {
 
                 inst = dictionary[dictIndex].substr(0, location) + notStr(dictionary[dictIndex][location]) + notStr(dictionary[dictIndex][location + 1]) + dictionary[dictIndex].substr(location + 2);
 
-                if (inst.size() != 32) {
+                /*if (inst.size() != 32) {
                     cout << identifier << endl;
-                }
+                }*/
             }
             else if (identifier == "100")
             {
@@ -589,9 +593,9 @@ vector<string> decode(vector<string> rawData) {
 
                 inst = dictionary[dictIndex].substr(0, location1) + notStr(dictionary[dictIndex][location1]) + dictionary[dictIndex].substr(location1 + 1, location2 - location1 - 1) + notStr(dictionary[dictIndex][location2]) + dictionary[dictIndex].substr(location2 + 1);
             
-                if (inst.size() != 32) {
+                /*if (inst.size() != 32) {
                     cout << identifier << endl;
-                }
+                }*/
             }
             else if (identifier == "101")
             {
@@ -600,9 +604,9 @@ vector<string> decode(vector<string> rawData) {
                 temp = temp.substr(3);
                 inst = dictionary[dictIndex];
 
-                if (inst.size() != 32) {
+                /*if (inst.size() != 32) {
                     cout << identifier << endl;
-                }
+                }*/
             }
             else if (identifier == "110")
             {
@@ -610,9 +614,9 @@ vector<string> decode(vector<string> rawData) {
                 inst = temp.substr(0, 32);
                 temp = temp.substr(32);
 
-                if (inst.size() != 32) {
+                /*if (inst.size() != 32) {
                     cout << identifier << endl;
-                }
+                }*/
             }
 
             if (identifier!="000") //To avoid RLE
