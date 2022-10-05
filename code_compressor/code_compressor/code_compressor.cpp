@@ -22,6 +22,7 @@ vector<int> findIndeces(vector<int> data, int element);
 int binToDec(string bin);
 vector<string> organizeOutput(vector<string> compressedCode, vector<string> dictionary);
 vector<string> decode(vector<string> rawData);
+void writeFile(string fileName, vector<string> data);
 
 int main()
 {
@@ -31,27 +32,30 @@ int main()
     vector<string> Dictionary = makeDictionary(Instructions);
     vector<string> CompressedCode = codeCompression(Instructions, Dictionary);
     vector<string> Organizedcode = organizeOutput(CompressedCode, Dictionary);
+    writeFile("cout.txt", Organizedcode);
     
 
     //code decompressing part
     cout << "\n\nCode decompressor \n";
     
     vector<string> DecodedInst = decode(readFile("compressed.txt"));
+    writeFile("dout.txt", DecodedInst);
+
     //vector<string> DecodedInst = decode(Organizedcode);
 
-    int i = 0;
+    /*int i = 0;
     for (string code:DecodedInst)
     {
         cout << i << " - " << code << endl;
         i++;
-    }
+    }*/
 
-    for (int i = 0; i < Instructions.size(); i++) {
-        if (Instructions[i]!=DecodedInst[i])
-        {
-            cout << "mismatch at " << i << endl;
-        }
-    }
+    //for (int i = 0; i < Instructions.size(); i++) { //To verify decompressor
+    //    if (Instructions[i]!=DecodedInst[i])
+    //    {
+    //        cout << "mismatch at " << i << endl;
+    //    }
+    //}
     
 
     return 0;
@@ -485,9 +489,10 @@ vector<string> organizeOutput(vector<string> compressedCode, vector<string> dict
         organizedCode.push_back(code);
     }
 
-    for (string k : organizedCode) {
-        cout << k << endl;
-    }
+    //// to verify results
+    //for (string k : organizedCode) {
+    //    cout << k << endl;
+    //}
     cout << "\ncompleted compression successfully" << endl;
 
     return organizedCode;
@@ -725,9 +730,26 @@ vector<string> decode(vector<string> rawData) {
 
     }
 
+    cout << "\ncompleted decompression successfully" << endl;
     return instructions;
 }
 
+void writeFile(string fileName, vector<string> data) {
+    std::ofstream out_file(fileName);
+    if (out_file)
+    {
+        for (string line : data)
+        {
+            out_file << line << std::endl;
+        }
+        out_file.close();
+        cout << "file writing succesfull" << endl;
+    }
+    else
+    {
+        cout << "file writing failed" << endl;
+    }
+}
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
