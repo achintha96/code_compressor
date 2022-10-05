@@ -17,17 +17,39 @@ vector<string> codeCompression(vector <string> instructionSet, vector <string> d
 string convertToBinary(int num);
 string convertToBinary(int num, int precision);
 char xorStr(char a, char b);
-vector <int> findIndeces(vector<int> data, int element);
+char notStr(char a);
+vector<int> findIndeces(vector<int> data, int element);
 int binToDec(string bin);
 void writeOutput(vector<string> compressedCode, vector<string> dictionary);
+vector<string> decode(vector<string> rawData);
 
 int main()
 {
+    //code comprssing part
     cout << "Code compressor \n";
-    vector <string> Instructions = readFile("original.txt");
-    vector <string> Dictionary = makeDictionary(Instructions);
-    vector <string> CompressedCode = codeCompression(Instructions, Dictionary);
+    vector<string> Instructions = readFile("original.txt");
+    vector<string> Dictionary = makeDictionary(Instructions);
+    vector<string> CompressedCode = codeCompression(Instructions, Dictionary);
     writeOutput(CompressedCode, Dictionary);
+    
+
+    //code decompressing part
+    cout << "\n\nCode decompressor \n";
+    //vector<string> rawData = readFile("compressed.txt");
+    vector<string> DecodedInst = decode(readFile("compressed.txt"));
+    int i = 0;
+    for (string code:DecodedInst)
+    {
+        cout << i << " - " << code << endl;
+        i++;
+    }
+
+    for (int i = 0; i < Instructions.size(); i++) {
+        if (Instructions[i]!=DecodedInst[i])
+        {
+            cout << "mismatch at " << i << endl;
+        }
+    }
     
 
     return 0;
@@ -396,6 +418,19 @@ char xorStr (char a, char b) {
     return result;
 }
 
+char notStr(char a) {
+    char output;
+    if (a=='1')
+    {
+        output = '0';
+    }
+    else if(a=='0')
+    {
+        output = '1';
+    }
+    return output;
+}
+
 vector <int> findIndeces(vector<int> data, int element) {
     vector<int> indeces;
     for (int i = 0; i < data.size(); i++) {
@@ -453,6 +488,242 @@ void writeOutput(vector<string> compressedCode, vector<string> dictionary) {
     }
     cout << "\ncompleted compression successfully" << endl;
 }
+
+vector<string> decode(vector<string> rawData) {
+    vector<string> instructions;
+    vector<string> dictionary;
+    
+    int sepIndex = find(rawData.begin(), rawData.end(), "xxxx") - rawData.begin();
+    for (int index=sepIndex+1;index<rawData.size();index++)
+    {
+        dictionary.push_back(rawData[index]);
+        //cout << rawData[index] << endl;
+    }
+
+    string temp = rawData[0];
+    string identifier;
+    for (int index = 1; index < sepIndex; index++)
+    {
+        temp = temp + rawData[index];
+        while (temp.size()>32)
+        {
+            string inst;
+            identifier = temp.substr(0, 3);
+            temp = temp.substr(3);
+            if (identifier=="000")
+            {
+                //0 - RLE
+                int repetition = binToDec(temp.substr(0, 2)) + 1;
+                temp = temp.substr(2);
+                for (int i = 0; i<repetition;i++)
+                {
+                    instructions.push_back(instructions[instructions.size() - 1]);
+                }
+            }
+            else if (identifier == "001")
+            {
+                //1 - 4bit mismatch
+                int location = binToDec(temp.substr(0, 5));
+                temp = temp.substr(5);
+                
+                string bitmask = temp.substr(0, 4);
+                temp = temp.substr(4);
+
+                int dictIndex = binToDec(temp.substr(0, 3));
+                temp = temp.substr(3);
+
+                inst = dictionary[dictIndex].substr(0, location);
+
+                for (int j = 0; j < 4; j++) {
+                    inst = inst + xorStr(bitmask[0], dictionary[dictIndex][location + j]);
+                }
+
+                inst = inst + dictionary[dictIndex].substr(location + 4);
+
+                if (inst.size() != 32) {
+                    cout << identifier << endl;
+                }
+                cout << dictionary[dictIndex]<<"-----"<<bitmask << endl;
+            }
+            else if (identifier == "010")
+            {
+                //2 - 1bit mismatch
+                int location = binToDec(temp.substr(0, 5));
+                temp = temp.substr(5);
+
+                int dictIndex = binToDec(temp.substr(0, 3));
+                temp = temp.substr(3);
+
+                inst = dictionary[dictIndex].substr(0, location) + notStr(dictionary[dictIndex][location]) + dictionary[dictIndex].substr(location + 1);
+
+                if (inst.size() != 32) {
+                    cout << identifier << endl;
+                }
+            }
+            else if (identifier == "011")
+            {
+                //3 - 2bit consecutive mismatch
+                int location = binToDec(temp.substr(0, 5));
+                temp = temp.substr(5);
+
+                int dictIndex = binToDec(temp.substr(0, 3));
+                temp = temp.substr(3);
+
+                inst = dictionary[dictIndex].substr(0, location) + notStr(dictionary[dictIndex][location]) + notStr(dictionary[dictIndex][location + 1]) + dictionary[dictIndex].substr(location + 2);
+
+                if (inst.size() != 32) {
+                    cout << identifier << endl;
+                }
+            }
+            else if (identifier == "100")
+            {
+                //4 - 2bit non-consecutive mismatch
+                int location1 = binToDec(temp.substr(0, 5));
+                temp = temp.substr(5);
+
+                int location2 = binToDec(temp.substr(0, 5));
+                temp = temp.substr(5);
+
+                int dictIndex = binToDec(temp.substr(0, 3));
+                temp = temp.substr(3);
+
+                inst = dictionary[dictIndex].substr(0, location1) + notStr(dictionary[dictIndex][location1]) + dictionary[dictIndex].substr(location1 + 1, location2 - location1 - 1) + notStr(dictionary[dictIndex][location2]) + dictionary[dictIndex].substr(location2 + 1);
+            
+                if (inst.size() != 32) {
+                    cout << identifier << endl;
+                }
+            }
+            else if (identifier == "101")
+            {
+                //5 - dictionary hit
+                int dictIndex = binToDec(temp.substr(0, 3));
+                temp = temp.substr(3);
+                inst = dictionary[dictIndex];
+
+                if (inst.size() != 32) {
+                    cout << identifier << endl;
+                }
+            }
+            else if (identifier == "110")
+            {
+                //6 - Uncompressed
+                inst = temp.substr(0, 32);
+                temp = temp.substr(32);
+
+                if (inst.size() != 32) {
+                    cout << identifier << endl;
+                }
+            }
+
+            if (identifier!="000") //To avoid RLE
+            {
+                instructions.push_back(inst);
+            }
+            
+        }
+    }
+
+    while (temp.size() > 2)
+    {
+        string inst;
+        identifier = temp.substr(0, 3);
+        temp = temp.substr(3);
+        if (identifier == "000")
+        {
+            //0 - RLE
+            int repetition = binToDec(temp.substr(0, 2)) + 1;
+            temp = temp.substr(2);
+            for (int i = 0; i < repetition; i++)
+            {
+                instructions.push_back(instructions[instructions.size() - 1]);
+            }
+        }
+        else if (identifier == "001")
+        {
+            //1 - 4bit mismatch
+            int location = binToDec(temp.substr(0, 5));
+            temp = temp.substr(5);
+
+            string bitmask = temp.substr(0, 4);
+            temp = temp.substr(4);
+
+            int dictIndex = binToDec(temp.substr(0, 3));
+            temp = temp.substr(3);
+
+            inst = dictionary[dictIndex].substr(0, location);
+
+            for (int j = 0; j < 4; j++) {
+                inst = inst + xorStr(bitmask[0], dictionary[dictIndex][location + j]);
+            }
+
+            inst = inst + dictionary[dictIndex].substr(location + 4);
+        }
+        else if (identifier == "010")
+        {
+            //2 - 1bit mismatch
+            int location = binToDec(temp.substr(0, 5));
+            temp = temp.substr(5);
+
+            int dictIndex = binToDec(temp.substr(0, 3));
+            temp = temp.substr(3);
+
+            inst = dictionary[dictIndex].substr(0, location) + notStr(dictionary[dictIndex][location]) + dictionary[dictIndex].substr(location + 1);
+
+        }
+        else if (identifier == "011")
+        {
+            //3 - 2bit consecutive mismatch
+            int location = binToDec(temp.substr(0, 5));
+            temp = temp.substr(5);
+
+            int dictIndex = binToDec(temp.substr(0, 3));
+            temp = temp.substr(3);
+
+            inst = dictionary[dictIndex].substr(0, location) + notStr(dictionary[dictIndex][location]) + notStr(dictionary[dictIndex][location + 1]) + dictionary[dictIndex].substr(location + 2);
+
+        }
+        else if (identifier == "100")
+        {
+            //4 - 2bit non-consecutive mismatch
+            int location1 = binToDec(temp.substr(0, 5));
+            temp = temp.substr(5);
+
+            int location2 = binToDec(temp.substr(0, 5));
+            temp = temp.substr(5);
+
+            int dictIndex = binToDec(temp.substr(0, 3));
+            temp = temp.substr(3);
+
+            inst = dictionary[dictIndex].substr(0, location1) + notStr(dictionary[dictIndex][location1]) + dictionary[dictIndex].substr(location1 + 1, location2 - location1 - 1) + notStr(dictionary[dictIndex][location2]) + dictionary[dictIndex].substr(location2 + 1);
+        }
+        else if (identifier == "101")
+        {
+            //5 - dictionary hit
+            int dictIndex = binToDec(temp.substr(0, 3));
+            temp = temp.substr(3);
+            inst = dictionary[dictIndex];
+        }
+        else if (identifier == "110")
+        {
+            //6 - Uncompressed
+            inst = temp.substr(0, 32);
+            temp = temp.substr(32);
+        }
+        else if (identifier == "111")
+        {
+            temp = "1"; //to terminate from while looping condition
+        }
+
+        if (identifier != "000") //To avoid RLE
+        {
+            instructions.push_back(inst);
+        }
+
+    }
+
+    return instructions;
+}
+
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
