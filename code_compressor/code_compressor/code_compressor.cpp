@@ -41,23 +41,6 @@ int main()
     vector<string> DecodedInst = decode(readFile("compressed.txt"));
     writeFile("dout.txt", DecodedInst);
 
-    //vector<string> DecodedInst = decode(Organizedcode);
-
-    /*int i = 0;
-    for (string code:DecodedInst)
-    {
-        cout << i << " - " << code << endl;
-        i++;
-    }*/
-
-    //for (int i = 0; i < Instructions.size(); i++) { //To verify decompressor
-    //    if (Instructions[i]!=DecodedInst[i])
-    //    {
-    //        cout << "mismatch at " << i << endl;
-    //    }
-    //}
-    
-
     return 0;
 }
 
