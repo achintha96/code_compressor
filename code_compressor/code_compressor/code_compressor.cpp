@@ -18,24 +18,15 @@ string convertToBinary(int num);
 string convertToBinary(int num, int precision);
 char xorStr(char a, char b);
 vector <int> findIndeces(vector<int> data, int element);
+int binToDec(string bin);
 
 int main()
 {
     cout << "Code compressor \n";
-    
     vector <string> Instructions = readFile("original.txt");
     vector <string> Dictionary = makeDictionary(Instructions);
     vector <string> CompressedCode = codeCompression(Instructions, Dictionary);
     
-    /*for (string i : CompressedCode){
-        cout << i << endl;
-    }
-    cout << "\ncode length=" << CompressedCode.size() << endl;*/
-     
-    /*cout << " 9=" << convertToBinary(9, 5) << endl;
-    cout << "10=" << convertToBinary(10, 6) << endl;
-    cout << "16=" << convertToBinary(16, 9) << endl;
-    cout << " 0=" << convertToBinary(0, 4) << endl;*/
 
     return 0;
 }
@@ -238,14 +229,14 @@ vector<string> codeCompression(vector <string> instructionSet, vector <string> d
             {//only one compression form available
                 encodedInstruction = possibleEncodes[0] + encodedInstruction;
             }
-            else
+            else if (possibleEncodes.size() > 1)
             {//many forms of compression available
-                vector <int> encodeLengths;
+                vector <int> encodeLengths; //contains the length of each string in possible encodes
                 for (string encodedCode : possibleEncodes) {
                     encodeLengths.push_back(encodedCode.size());
                 }
                 int minLength = *min_element(encodeLengths.begin(), encodeLengths.end());
-                vector<int> minIndeces = findIndeces(encodeLengths, minLength);
+                vector<int> minIndeces = findIndeces(encodeLengths, minLength); //contains the indeces of minimums in encodeLengths vector
 
                 if (minIndeces.size()==1)
                 {
@@ -253,7 +244,19 @@ vector<string> codeCompression(vector <string> instructionSet, vector <string> d
                 }
                 else
                 {
-
+                    //vector<int> prefix;
+                    int minVal = 10;
+                    string finalEncode;
+                    for (int ind : minIndeces)
+                    {
+                        int prefix = binToDec(possibleEncodes[ind].substr(0, 3));
+                        if (prefix<minVal)
+                        {
+                            minVal = prefix;
+                            finalEncode = possibleEncodes[ind];
+                        }
+                    }
+                    encodedInstruction = finalEncode + encodedInstruction;
                 }
 
                 
@@ -262,7 +265,8 @@ vector<string> codeCompression(vector <string> instructionSet, vector <string> d
             //encodedInstruction = "    -1";
         }
         compressedInstructions.push_back(encodedInstruction);
-        cout << index << "  original=" << instructionSet[index] << "  encoded=" << encodedInstruction << endl;
+        //cout << index << "  original=" << instructionSet[index] << "  encoded=" << encodedInstruction << endl;
+        cout << index << "  original=" << instructionSet[index] << "  encoded=" << compressedInstructions[compressedInstructions.size()-1] << endl;
 
         //cheking for RLE
         int repetionRLE = 0;
@@ -399,6 +403,18 @@ vector <int> findIndeces(vector<int> data, int element) {
         }
     }
     return indeces;
+}
+
+int binToDec(string bin) {
+    int dec = 0;
+    int exponent = 1;
+    for (int i = bin.size() - 1; i >= 0; i--) {
+        if (bin[i] == '1') {
+            dec = dec + (exponent);
+        }
+        exponent = exponent * 2;
+    }
+    return dec;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
